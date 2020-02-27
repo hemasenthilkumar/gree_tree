@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 33.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; /* Should be removed. Only for demonstration */
+   overflow: scroll;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+</style>
+</head>
+<body>
+<center><h3>Welcome back, {{us}}!</h3></center>
+<br>
+<br>
+<div class="row">
+  <div class="column" style="background-color:white;">
+   <table>
+{% for n,r in d.items() %}
+<tr>
+<th>{{n}}&nbsp;&nbsp;</th>
+<td> <button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:5000/follow?usname={{us}}&folname={{n}}&value={{r}}'">{% if r %}Unfollow{% else %}Follow{% endif %} </button> <br></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+{% endfor %}
+</table>
+<br>
+<br>
+<br>
+<br>
+  </div>
+  <div class="column" style="background-color:white;">
+   <strong>Post Feeds</strong>
+   <img src="data:;base64,{{image}}" style="width:200px;height:200px;"/>
+   <form class="form-group row" method="POST">
+   {{form.post_text(class="form-control-label")}}
+   {{form.submit(class="btn btn-success")}}
+   </form>
+  </div>
+  <div class="column" style="background-color:white;">
+     <button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:5000/edit?usname={{us}}'">Edit Profile</button>
+<br>
+<br>
+    <button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:5000/login'">Orders</button>
+<br>
+<br>
+ <button class="btn btn-warning">Post</button>
+<br>
+<br>
+<button class="btn btn-danger" onclick="window.location.href='http://127.0.0.1:5000/login'">Logout</button>
+  </div>
+</div>
+
+</body>
+</html>

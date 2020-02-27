@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+
+.m
+{
+padding-left:30em;
+}
+.b
+{
+padding-right: 30em;
+}
+
+.z
+{
+
+padding-right: 30em;
+}
+
+</style>
+</head>
+<body>
+<center>
+<br>
+<br>
+<br>
+<br>
+<img src="{{url_for('static', filename='gh211.gif')}}" alt="login image" style="width:20%;">
+<br>
+<br>
+<div class="m">
+<form method="POST" class="form-group row">
+<div class="z">
+{% if mes %}
+<div class="alert alert-success">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+<strong>{{mes}}</strong>
+</div>
+{% endif %}
+</div>
+<div class="col-xs-3">{{form.username.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.username(class="form-control")}}</div>
+<br><br>
+<div class="col-xs-3">{{form.password.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.password(class="form-control")}}</div>
+<br>
+<br>
+<br>
+<div class="b">{{ form.submit(class="btn btn-success")}}</div>
+</form>
+</div>
+</center>
+</body>
+</html>

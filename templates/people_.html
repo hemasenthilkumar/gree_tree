@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+
+.jumbotron
+{
+background:white;
+}
+td
+{
+    padding:0 15px;
+}
+tr
+{
+    padding:15px;
+}
+</style>
+</head>
+<body>
+<br>
+<br>
+<br>
+<center>
+<div class="jumbotron">
+<div class="log">
+<button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:5000/login'">Logout</button>
+</div>
+<br>
+<br>
+<br>
+<br>
+<div split="left">
+<table>
+{% for n,r in pep.items() %}
+<tr>
+<th>{{n}}</th>
+<td> <button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:5000/follow?usname={{us}}&folname={{n}}'">Follow</button> </th>
+</tr>
+<tr>
+<td>({{r}})</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+<div split="right">
+<p>right side</p>
+</div>
+</body>
+</html>

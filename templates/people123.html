@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 23.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; 
+   overflow: scroll;
+}
+
+.column1 {
+  float: left;
+  width: 53.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; 
+   overflow: scroll;
+}
+
+.column2 {
+  float: left;
+  width: 23.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; 
+   overflow: scroll;
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.edc
+{
+border-radius: 25px;
+background:#A9D818;
+ padding-left: 30px;
+width: 550px;
+height:60px;
+}
+</style>
+</head>
+<body>
+<center><h2> Welcome back, {{us}}!</h2></center>
+<br>
+<br>
+<div class="row">
+  <div class="column" style="background-color:white;">
+   <table>
+{% for n,r in d.items() %}
+<tr>
+<th>{{n}}&nbsp;&nbsp;</th>
+<td> <button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:9999/follow?usname={{us}}&folname={{n}}&value={{r}}'"> {% if r %}Unfollow {% else %} Follow {% endif %} </button><br></td>
+</tr>
+<tr>
+<td>&nbsp;</td>
+</tr>
+{% endfor %}
+</table>
+<br>
+<br>
+<br>
+<br>
+  </div>
+  <div class="column1" style="background-color:white;">
+	{% if role %}
+   		<input id="txt" type="text"/>
+		 <button type="button" id="h" class="btn btn-danger">Post</button>
+		<script>
+	$(document).ready(function(){
+  	$("#h").click(function(){
+   	var usp=$("#txt").val()
+   	var url="http://127.0.0.1:9999/feeds?us={{us}}&usp="+usp
+    	window.location = url;
+  	});
+	});
+	</script>
+	{% else %}
+
+  	{% endif %}
+   <center><h3>Post Feeds</h3></center>
+	<br>
+	<br>
+	{% for k,v in p.items() %}
+	{% for l in v %}
+	<div class="edc">
+	<h4> {{l[0]}} </h4>
+	<i>posted by </i> {{k}} on {{l[1]}}
+	</div>
+	{% endfor %}
+	<br>
+	{% endfor %}
+	<br>
+	 
+  </div>
+  <div class="column2" style="background-color:white;">
+     <button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:9999/edit?usname={{us}}'">Edit Profile</button>
+<br>
+<br>
+    <button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:9999/login'">Orders</button>
+<br>
+<br>
+<button class="btn btn-danger" onclick="window.location.href='http://127.0.0.1:9999/login'">Logout</button>
+  </div>
+</div>
+</body>
+</html>

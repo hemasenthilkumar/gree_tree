@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+
+.jumbotron
+{
+background:white;
+}
+</style>
+</head>
+<body>
+<br>
+<br>
+<br>
+<center>
+<div class="jumbotron">
+<div class="log">
+<button class="btn btn-warning" onclick="window.location.href='http://127.0.0.1:5000/login'">Logout</button>
+</div>
+<center>
+<h2>Green Tree User portal</h2>
+&nbsp;	&nbsp;	&nbsp;	&nbsp;	&nbsp;
+<button class="btn btn-primary"onclick="window.location.href='http://127.0.0.1:5000/profile'">Your profile <span class="glyphicon glyphicon-grain"></span></button>
+&nbsp;	&nbsp;	&nbsp;	&nbsp;	&nbsp;
+<button class="btn btn-primary"onclick="window.location.href='http://127.0.0.1:5000/feed'">Check Feed <span class="glyphicon glyphicon-tree-conifer"></span></button>
+&nbsp;	&nbsp;	&nbsp;	&nbsp;	&nbsp;
+<button class="btn btn-primary"onclick="window.location.href='http://127.0.0.1:5000/people/{{us}}'">Explore People <span class="glyphicon glyphicon-leaf"></span></button>
+<div class="container"><h3> Logged user: {{us}} </h3></div>
+</div>
+</center>
+</body>
+</html>

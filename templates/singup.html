@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+.body
+{
+background-image: "{{url_for('static', filename='login.jpg')}}" ;
+}
+
+.m
+{
+padding-left:30em;
+}
+.b
+{
+padding-right:30em;
+}
+.z
+{
+padding-right:30em;
+}
+</style>
+</head>
+<body>
+<center>
+<img src="{{url_for('static', filename='aa.gif')}}" alt="Singup image" style="width:25%;">
+<div class="m">
+<form method="POST">
+<div class="z">
+{% if message %}
+<div class="alert alert-warning">
+<button type="button" class="close" data-dismiss="alert">&times;</button>
+<strong>{{message}}</strong>
+</div>
+{% endif %}
+</div>
+<div class="col-xs-3">{{form.username.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{form.username(class="form-control")}}</div>
+<br>
+<br><br>
+<div class="col-xs-3">{{form.email.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.email(class="form-control")}}</div>
+<br>
+<br><br>
+<div class="col-xs-3">{{form.password.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.password(class="form-control" )}}</div>
+<br>
+<br><br>
+<div class="col-xs-3">{{form.cpassword.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.cpassword(class="form-control")}}</div>
+<br>
+<br><br>
+<div class="col-xs-3">{{form.updates.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.updates(class="form-control")}}</div>
+<br>
+<br>
+<br>
+<div class="col-xs-3">{{form.bday.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.bday(class="form-control")}}</div>
+<br>
+<br>
+<br>
+<div class='b'>{{ form.submit(class="btn btn-danger", onclick="alert({{message}});")}}</div>
+<br>
+<br>
+</form>
+</div>
+</div>
+</center>
+</body>
+</html>
