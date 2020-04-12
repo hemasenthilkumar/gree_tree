@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+.body
+{
+background-image: "{{url_for('static', filename='login.jpg')}}" ;
+}
+
+.m
+{
+padding-left:30em;
+padding-right:30em;
+}
+.b
+{
+padding-right:30em;
+}
+.z
+{
+padding-right:30em;
+}
+</style>
+</head>
+<body>
+<center>
+<img src="{{url_for('static', filename='leaf.png')}}" alt="Purchase image" style="width:15%;">
+<br>
+<br>
+<h2>Purchase plants Here!</h2>
+<br>
+<div>
+<h3>Cart Status:{{mes}} </h3>
+<br>
+<div class="m">
+<table class="table table-hover">
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Owned by</th>
+<th></th>
+</tr>
+{% for val in l %}
+<tr>
+<td>{{val.name}}</td>
+<td>{{val.price}}</td>
+<td>{{val.username}}</td>
+<td><button class="btn btn-primary"  onclick="window.location.href='http://127.0.0.1:9999/cart?product={{val.name}}&usname={{us}}'">Add to Cart</button></td>
+</tr>
+{% endfor %}
+</table>
+</div>
+<br>
+<button class="btn btn-success" onclick="window.location.href='http://127.0.0.1:9999/people?usname={{us}}'">Home</button>
+</div>
+
+</center>
+</body>
+</html>

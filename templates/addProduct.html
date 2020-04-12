@@ -26,10 +26,8 @@ padding-right:30em;
 </style>
 </head>
 <body>
-<br>
-<br>
 <center>
-<img src="{{url_for('static', filename='leaf.png')}}" alt="Singup image" style="width:15%;">
+<img src="{{url_for('static', filename='aa.gif')}}" alt="Singup image" style="width:25%;">
 <br>
 <br>
 <div class="m">
@@ -42,29 +40,26 @@ padding-right:30em;
 </div>
 {% endif %}
 </div>
-<div class="col-xs-3">{{form.username.label(class="form-control-label") }}</div>
-<div class="col-xs-3">{{form.username(class="form-control")}}</div>
+<div class="col-xs-3">{{form.name.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{form.name(class="form-control")}}</div>
 <br>
 <br><br>
-<div class="col-xs-3">{{form.email.label(class="form-control-label") }}</div>
-<div class="col-xs-3">{{ form.email(class="form-control")}}</div>
+<div class="col-xs-3">{{form.price.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.price(class="form-control")}}</div>
 <br>
 <br><br>
-<div class="col-xs-3">{{form.password.label(class="form-control-label") }}</div>
-<div class="col-xs-3">{{ form.password(class="form-control" )}}</div>
-<br>
+<div class="col-xs-3">{{form.location.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.location(class="form-control" )}}</div>
 <br><br>
-<div class="col-xs-3">{{form.cpassword.label(class="form-control-label") }}</div>
-<div class="col-xs-3">{{ form.cpassword(class="form-control")}}</div>
 <br>
-<br><br>
-<div class="col-xs-3">{{form.updates.label(class="form-control-label") }}</div>
-<div class="col-xs-3">{{ form.updates(class="form-control")}}</div>
+<br>
+<div class="col-xs-3">{{form.category.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.category(class="form-control")}}</div>
 <br>
 <br>
 <br>
-<div class="col-xs-3">{{form.bday.label(class="form-control-label") }}</div>
-<div class="col-xs-3">{{ form.bday(class="form-control")}}</div>
+<div class="col-xs-3">{{form.file.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.file(class="form-control")}}</div>
 <br>
 <br>
 <br>

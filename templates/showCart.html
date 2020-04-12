@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+.body
+{
+background-image: "{{url_for('static', filename='login.jpg')}}" ;
+}
+
+.m
+{
+padding-left:30em;
+padding-right:30em;
+}
+.b
+{
+padding-right:30em;
+}
+.z
+{
+padding-right:30em;
+}
+</style>
+</head>
+<body>
+<center>
+<img src="{{url_for('static', filename='leaf.png')}}" alt="Purchase image" style="width:15%;">
+<br>
+<br>
+<h2>Your Cart</h2>
+<div>
+<h3>{% if l|length %} Total {{l|length}} products {% else %}Empty cart.<br> Add products to cart to purchase!{% endif %}</h3>
+<div class="m">
+<table class="table table-hover">
+<tr>
+<th>Product</th>
+<th>Price</th>
+<th>Owned by</th>
+</tr>
+{% for val in l %}
+<tr>
+<td>{{val.name}}</td>
+<td>{{val.price}}</td>
+<td>{{val.username}}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+{% if l|length %}
+<h3>Total amount to pay: {{total}}</h3>
+<button class="btn btn-success" data-toggle="modal" data-target="#myModal">Pay Now</button>
+{% endif %}
+<br>
+<br>
+<table>
+<tr>
+<th><button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:9999/purchase?usname={{usname}}'">Purchase</button>&nbsp;&nbsp;&nbsp;</th>
+<th><button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:9999/people?usname={{usname}}'">Home</button></th>
+</tr>
+</table>
+</center>
+
+
+<!-- Modal -->
+<div id="myModal" class="modal fade" role="dialog">
+  <div class="modal-dialog">
+
+    <!-- Modal content-->
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal">&times;</button>
+        <h4 class="modal-title">Payment Status</h4>
+      </div>
+      <div class="modal-body">
+        <p>Payment Successful! Your orders will be available in orders Page now.</p>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-default" onclick="window.location.href='http://127.0.0.1:9999/Emptycart?usname={{usname}}'">Close</button>
+      </div>
+    </div>
+
+
+
+
+</body>
+</html>

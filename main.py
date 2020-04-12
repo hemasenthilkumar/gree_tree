@@ -1,6 +1,6 @@
 from flask import Flask, request, url_for, Flask,redirect
 from flask_pymongo import PyMongo
-from forms import LoginForm, SignupForm,Post,PostText,EditUser
+from forms import LoginForm, SignupForm,Post,PostText,EditUser,ProductForm
 from flask import Flask, render_template, request
 from flask import request, abort, make_response
 from base64 import b64encode
@@ -16,6 +16,12 @@ from datetime import date
 import datetime
 import random, threading, webbrowser
 from neo4j import GraphDatabase
+
+class Product:
+  def __init__(self, name, price,usname):
+    self.name = name
+    self.price = price
+    self.username=usname    
 
 g=GraphDatabase.driver(uri='bolt://localhost:7687',auth=("neo4j","hema13"))
 session=g.session()
@@ -146,6 +152,7 @@ def people():
         follow.append(n['users'])
     for n in nodes2:
         total[n['users']]=n['role']
+        role=n['role']
     print(total[usname])
     role=total[usname]
     if role=="Just Gonna purchase":
@@ -277,6 +284,110 @@ def edit_ps():
     session.run(q1)
     return redirect(url_for('edit',usname=us))
 
+@app.route('/addProduct')
+def addProduct():
+    form=ProductForm()
+    return render_template('addProduct.html',form=form)
+
+@app.route('/addProduct',methods=['POST'])
+def addProduct1():
+    loc=[]
+    usname=request.args.get('usname')
+    form=ProductForm()
+    name=request.form['name']
+    category=request.form['category']
+    if(category=='1'):
+        c="Indoor"
+    if(category=='2'):
+        c="Outdoor"
+    if(category=='3'):
+        c="Decorative"
+    price=request.form['price']
+    file=request.form['file']
+    q2="create(p:product{name:'"+name+"',price:'"+str(price)+"',category:'"+c+"',postedBy:'"+usname+"',imageUrl:'"+file+"'}) return ID(p)"
+    q3="match(p:product{name:'"+name+"'}),(n:user{username:'"+usname+"'}) create (n)-[o:owns]->(p)"
+    print(q2)
+    print(q3)
+    nodes=session.run(q2)
+    nodes1=session.run(q3)
+    location=request.form.getlist('location')
+    for l in location:
+        if(l=='1'):
+            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Vellore'}) create (p)-[a:available_in]->(l)")
+        if(l=='2'):
+            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Chennai'}) create (p)-[a:available_in]->(l)")
+        if(l=='3'):
+            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Bangalore'}) create (p)-[a:available_in]->(l)")
+        if(l=='4'):
+            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Hyderabad'}) create (p)-[a:available_in]->(l)")
+    print(name,price,c,loc,file,usname)
+    return render_template('addProduct.html',form=form)
+
+@app.route('/purchase')
+def purchase():
+    l=[]
+    usname=request.args.get('usname')
+    mes=request.args.get('mes')
+    q5="match(u:user{username:'"+usname+"'})-[f:follows]->(n:user) match(n:user)-[o:owns]->(p:product) return n.username,p.price,p.name"
+    nodes=session.run(q5)
+    for n in nodes:
+        p=Product(n['p.name'],n['p.price'],n['n.username'])
+        l.append(p)
+    return render_template('purchase.html',l=l,us=usname,mes=mes)
+
+
+def checkCart(usname):
+  q4="match(n:user{username:'"+usname+"'})-[h:has]->(c:cart) return ID(c)"
+  nodes=session.run(q4)
+  if(nodes.peek()):
+    for n in nodes:
+      var=n['ID(c)']
+  else:
+    var="None"
+  return var
+  
+
+@app.route('/cart')
+def cart():
+    usname=request.args.get('usname')
+    product=request.args.get('product')
+    cart_id=checkCart(usname)
+    if cart_id!="None":
+      q3="match (u:user{username:'"+usname+"'})-[h:has]->(c:cart), (p:product{name:'"+product+"'}) create (c)-[c1:contains]->(p)"
+      session.run(q3)
+    else:
+      #create cart
+      q5="match(u:user{username:'"+usname+"'}) create (u)-[h:has]->(c:cart)"
+      q3="match (u:user{username:'"+usname+"'})-[h:has]->(c:cart), (p:product{name:'"+product+"'}) create (c)-[c1:contains]->(p)"
+      session.run(q5)
+      session.run(q3)
+    mes="product "+product+" added to cart!"
+    print(mes)
+    return redirect(url_for('purchase',usname=usname,mes=mes))
+
+@app.route('/showCart')
+def showCart():
+  l=[]
+  total=0
+  usname=request.args.get('usname')
+  q6="match(u:user{username:'"+usname+"'})-[h:has]-(c:cart)-[c1:contains]-(p:product) return p.name,p.price"
+  nodes=session.run(q6)
+  for n in nodes:
+    total=total+int(n['p.price'])
+    p=Product(n['p.name'],n['p.price'],usname)
+    l.append(p)
+  return render_template('showCart.html',l=l,total=total,usname=usname)
+
+@app.route('/Emptycart')
+def emptycart():
+  usname=request.args.get('usname')
+  q7="match(u:user{username:'"+usname+"'})-[h:has]-(c:cart)-[c1:contains]-(p:product) delete c1"
+  session.run(q7)
+  return redirect(url_for('showCart',usname=usname))
+  
+
+  
+    
 if __name__=='__main__':
     app.run(debug=True,port=9999)
     
