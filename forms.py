@@ -39,3 +39,18 @@ class ProductForm(FlaskForm):
     category = SelectField(u'Plant Categories', choices =c, validators = [DataRequired()])
     file=FileField()
     submit = SubmitField('Add product')
+
+class SearchByP(FlaskForm):
+     l=[(1,'Vellore'),(2,'Chennai'),(3,'Bangalore'),(4,'Hyderabad')]
+     location = SelectField(u'Available locations', choices =l, validators = [DataRequired()])
+     submit = SubmitField('Search by location')
+
+class SearchbyC(FlaskForm):
+    c=[(1,'Indoor'),(2,'Outdoor'),(3,'Decorative')]
+    category = SelectField(u'Plant Categories', choices =c, validators = [DataRequired()])
+    submit = SubmitField('Search by Category')
+
+    
+    
+    
+    

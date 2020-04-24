@@ -40,12 +40,16 @@ padding-right:30em;
 <th>Product</th>
 <th>Price</th>
 <th>Owned by</th>
+<th>Unique Product ID</th>
+<th></th>
 </tr>
 {% for val in l %}
 <tr>
 <td>{{val.name}}</td>
 <td>{{val.price}}</td>
 <td>{{val.username}}</td>
+<td>{{val.id_}}</td>
+<td><button class="btn btn-danger" onclick="window.location.href='http://127.0.0.1:9999/removeProduct?usname={{usname}}&pid={{val.id_}}'">Remove from cart</button></td>
 </tr>
 {% endfor %}
 </table>
@@ -80,7 +84,7 @@ padding-right:30em;
         <p>Payment Successful! Your orders will be available in orders Page now.</p>
       </div>
       <div class="modal-footer">
-        <button type="button" class="btn btn-default" onclick="window.location.href='http://127.0.0.1:9999/Emptycart?usname={{usname}}'">Close</button>
+        <button type="button" class="btn btn-default" onclick="window.location.href='http://127.0.0.1:9999/Emptycart?usname={{usname}}&tot={{total}}'">Close</button>
       </div>
     </div>
 

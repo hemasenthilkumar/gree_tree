@@ -1,6 +1,6 @@
 from flask import Flask, request, url_for, Flask,redirect
 from flask_pymongo import PyMongo
-from forms import LoginForm, SignupForm,Post,PostText,EditUser,ProductForm
+from forms import LoginForm, SignupForm,Post,PostText,EditUser,ProductForm,SearchByP,SearchbyC
 from flask import Flask, render_template, request
 from flask import request, abort, make_response
 from base64 import b64encode
@@ -16,12 +16,28 @@ from datetime import date
 import datetime
 import random, threading, webbrowser
 from neo4j import GraphDatabase
+import smtplib
+
+
+myclient = pymongo.MongoClient("mongodb://localhost:27017/")
+mydb = myclient["testdb"]
+mycol = mydb["GreenTreeOrders"]
+
+
+#s = smtplib.SMTP(host='localhost', port=25)
 
 class Product:
-  def __init__(self, name, price,usname):
+  def __init__(self, name, price,usname,id_=None):
     self.name = name
     self.price = price
-    self.username=usname    
+    self.username=usname
+    self.id_ =id_ if id_ is not None else 0
+
+class Order:
+  def __init__(self,list_P,total,date):
+    self.list_P=list_P
+    self.total=total
+    self.date=date
 
 g=GraphDatabase.driver(uri='bolt://localhost:7687',auth=("neo4j","hema13"))
 session=g.session()
@@ -326,6 +342,8 @@ def addProduct1():
 @app.route('/purchase')
 def purchase():
     l=[]
+    form=SearchByP()
+    form2=SearchbyC()
     usname=request.args.get('usname')
     mes=request.args.get('mes')
     q5="match(u:user{username:'"+usname+"'})-[f:follows]->(n:user) match(n:user)-[o:owns]->(p:product) return n.username,p.price,p.name"
@@ -333,9 +351,72 @@ def purchase():
     for n in nodes:
         p=Product(n['p.name'],n['p.price'],n['n.username'])
         l.append(p)
-    return render_template('purchase.html',l=l,us=usname,mes=mes)
+    return render_template('purchase.html',l=l,us=usname,mes=mes,form=form,form2=form2)
+
+@app.route('/purchase',methods=['POST'])
+def purchase1():
+  l=[]
+  q1=""
+  print("In here!")
+  usname=request.args.get('usname')
+  form=SearchByP()
+  form2=SearchbyC()
+  q1="match(u:user{username:'"+usname+"'})-[f:follows]->(n:user) match(n:user)-[o:owns]->(p:product) return n.username,p.price,p.name"
+  print(q1)
+  for n in nodes:
+    p=Product(n['p.name'],n['p.price'],n['n.username'])
+    l.append(p)
+  return render_template('purchase.html',l=l,us=usname,form=form,form2=form2)
 
 
+@app.route('/sloc',methods=['POST'])
+def sloc():
+  l=[]
+  form=SearchbyC()
+  form2=SearchByP()
+  usname=request.args.get('usname')
+  location=request.form['location']
+  if(location=="1"):
+    location="Vellore"
+  if(location=="2"):
+    location="Chennai"
+  if(location=="3"):
+    location="Bangalore"
+  if(location=="4"):
+    location="Hyderabad"
+  print("form 1")
+  q1="match(u:user{username:'"+usname+"'})-[f:follows]->(n:user) match(n:user)-[o:owns]->(p:product) match (p)-[a:available_in]->(l:location{name:'"+location+"'}) return n.username,p.price,p.name"
+  nodes=session.run(q1)
+  for n in nodes:
+    p=Product(n['p.name'],n['p.price'],n['n.username'])
+    l.append(p)
+  return render_template('purchase.html',l=l,us=usname,form=form2,form2=form)
+
+
+@app.route('/scat',methods=['POST'])
+def scat():
+  l=[]
+  form=SearchbyC()
+  form2=SearchByP()
+  usname=request.args.get('usname')
+  category=request.form['category']
+  print(category)
+  if(category=="1"):
+    category="Indoor"
+  if(category=="2"):
+    category="Outdoor"
+  if(category=="3"):
+    category="Decorative"
+  print("form 2")
+  q1="match(u:user{username:'"+usname+"'})-[f:follows]->(n:user) match(n:user)-[o:owns]->(p:product{category:'"+category+"'}) return n.username,p.price,p.name"
+  nodes=session.run(q1)
+  for n in nodes:
+    p=Product(n['p.name'],n['p.price'],n['n.username'])
+    l.append(p)
+  print(l)
+  return render_template('purchase.html',l=l,us=usname,form=form2,form2=form)
+  
+  
 def checkCart(usname):
   q4="match(n:user{username:'"+usname+"'})-[h:has]->(c:cart) return ID(c)"
   nodes=session.run(q4)
@@ -354,12 +435,12 @@ def cart():
     cart_id=checkCart(usname)
     if cart_id!="None":
       q3="match (u:user{username:'"+usname+"'})-[h:has]->(c:cart), (p:product{name:'"+product+"'}) create (c)-[c1:contains]->(p)"
-      session.run(q3)
+      nodes=session.run(q3)  
     else:
       #create cart
       q5="match(u:user{username:'"+usname+"'}) create (u)-[h:has]->(c:cart)"
       q3="match (u:user{username:'"+usname+"'})-[h:has]->(c:cart), (p:product{name:'"+product+"'}) create (c)-[c1:contains]->(p)"
-      session.run(q5)
+      nodes=session.run(q5)
       session.run(q3)
     mes="product "+product+" added to cart!"
     print(mes)
@@ -370,22 +451,70 @@ def showCart():
   l=[]
   total=0
   usname=request.args.get('usname')
-  q6="match(u:user{username:'"+usname+"'})-[h:has]-(c:cart)-[c1:contains]-(p:product) return p.name,p.price"
+  q6="match(u:user{username:'"+usname+"'})-[h:has]-(c:cart)-[c1:contains]-(p:product) return p.name,p.price,ID(c1)"
   nodes=session.run(q6)
   for n in nodes:
     total=total+int(n['p.price'])
-    p=Product(n['p.name'],n['p.price'],usname)
+    p=Product(n['p.name'],n['p.price'],usname,n['ID(c1)'])
     l.append(p)
   return render_template('showCart.html',l=l,total=total,usname=usname)
+
+@app.route('/removeProduct')
+def removeProduct():
+  pid=request.args.get('pid')
+  usname=request.args.get('usname')
+  q8="match()-[c:contains]-() where ID(c)="+pid+" delete c"
+  session.run(q8)
+  return redirect(url_for('showCart',usname=usname))
+
+
+def insert_mongo(usname,tot):
+  l=[]
+  q6="match(u:user{username:'"+usname+"'})-[h:has]-(c:cart)-[c1:contains]-(p:product) return p.name,p.price,ID(c1)"
+  nodes=session.run(q6)
+  for n in nodes:
+    l.append(n['p.name'])
+  x=datetime.datetime.now()
+  mycol.insert({"placedby":usname,"products":l,"total":tot,"orderDate":x.strftime("%d-%b-%Y %I:%M:%S %p")})
+    
+  
 
 @app.route('/Emptycart')
 def emptycart():
   usname=request.args.get('usname')
+  total=request.args.get('tot')
+  insert_mongo(usname,total)
+##  l=request.args.get('l')
+##  print(l)
+##  #p=Product()
+##  for val in l:
+##    #p=val
+##    print(eval(val))
+##    print(val)
+##    #print(p.name)
   q7="match(u:user{username:'"+usname+"'})-[h:has]-(c:cart)-[c1:contains]-(p:product) delete c1"
   session.run(q7)
   return redirect(url_for('showCart',usname=usname))
-  
 
+
+def listToString(s):  
+    # initialize an empty string 
+    str1 = "," 
+    
+    # return string   
+    return (str1.join(s))
+
+@app.route('/Orders')
+def orders():
+  usname=request.args.get('usname')
+  l=[]
+  filt={"placedby":usname}
+  for x in mycol.find(filt):
+    p=listToString(x['products'])
+    o=Order(p,x['total'],x['orderDate'])
+    l.append(o)
+  return render_template('orders.html',l=l,usname=usname)
+  
   
     
 if __name__=='__main__':

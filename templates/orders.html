@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+.body
+{
+background-image: "{{url_for('static', filename='login.jpg')}}" ;
+}
+
+.m
+{
+padding-left:30em;
+padding-right:30em;
+}
+.b
+{
+padding-right:30em;
+}
+.z
+{
+padding-right:30em;
+}
+</style>
+</head>
+<body>
+<center>
+<img src="{{url_for('static', filename='leaf.png')}}" alt="Purchase image" style="width:15%;">
+<br>
+<br>
+<h2>Your Cart</h2>
+<div>
+<h3>{% if l|length %} Total {{l|length}} orders {% else %}No orders.<br> Add products to cart to purchase!{% endif %}</h3>
+<div class="m">
+<table class="table table-hover">
+<tr>
+<th>Products</th>
+<th>Total</th>
+<th>Placed on</th>
+</tr>
+{% for val in l %}
+<tr>
+<td>{{val.list_P}}</td>
+<td>{{val.total}}</td>
+<td>{{val.date}}</td>
+</tr>
+{% endfor %}
+</table>
+</div>
+</div>
+<br>
+<br>
+<table>
+<tr>
+<th><button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:9999/purchase?usname={{usname}}'">Purchase</button>&nbsp;&nbsp;&nbsp;</th>
+<th><button class="btn btn-primary" onclick="window.location.href='http://127.0.0.1:9999/people?usname={{usname}}'">Home</button></th>
+</tr>
+</table>
+</center>
+</body>
+</html>

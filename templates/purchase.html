@@ -36,6 +36,17 @@ padding-right:30em;
 <div>
 <h3>Cart Status:{{mes}} </h3>
 <br>
+<form method="POST" action="{{(url_for('sloc',usname=us))}}" class="form-group row">
+<div class="col-xs-3">{{form.location.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form.location(class="form-control" )}}</div>
+<div class='b'><button class="btn btn-danger">Search by location</button></div>
+</form>
+<br>
+<form method="POST" action="{{(url_for('scat',usname=us))}}" class="form-group row">
+<div class="col-xs-3">{{form2.category.label(class="form-control-label") }}</div>
+<div class="col-xs-3">{{ form2.category(class="form-control" )}}</div>
+<div class='b'><button class="btn btn-danger">Search by Category</button></div>
+</form>
 <div class="m">
 <table class="table table-hover">
 <tr>
