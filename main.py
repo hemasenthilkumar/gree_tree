@@ -22,10 +22,14 @@ import smtplib
 myclient = pymongo.MongoClient("mongodb://localhost:27017/")
 mydb = myclient["testdb"]
 mycol = mydb["GreenTreeOrders"]
+mycol2=mydb["Chats"]
 
 
 #s = smtplib.SMTP(host='localhost', port=25)
-
+class Message:
+  def __init__(self,name,msg):
+    self.name=name
+    self.msg=msg
 class Product:
   def __init__(self, name, price,usname,id_=None):
     self.name = name
@@ -514,9 +518,37 @@ def orders():
     o=Order(p,x['total'],x['orderDate'])
     l.append(o)
   return render_template('orders.html',l=l,usname=usname)
-  
-  
-    
+
+@app.route('/chat')
+def chat():
+  l=[]
+  sent=[]
+  recv=[]
+  usname=request.args.get('usname')
+  q="match(u:user{username:'"+usname+"'})-[f:follows]->(n:user) return n.username"
+  for x in mycol2.find({"from":usname}):
+    m=Message(x['to'],x['msg'])
+    sent.append(m)
+  for x in mycol2.find({"to":usname}):
+    m=Message(x['from'],x['msg'])
+    recv.append(m)
+  nodes=session.run(q)
+  for n in nodes:
+    try:
+      l.append(n['n.username'])
+    except TypeError:
+      continue
+  return render_template('chat.html',l=l,us=usname,sent=sent,recv=recv)
+
+
+@app.route('/sendmsg')
+def sendmsg():
+  usname=request.args.get('us')
+  to=request.args.get('to')
+  msg=request.args.get('msg')
+  mycol2.insert({"from":usname,"to":to,"msg":msg})
+  return redirect(url_for('chat',usname=usname))
+
 if __name__=='__main__':
     app.run(debug=True,port=9999)
     

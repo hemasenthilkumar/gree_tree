@@ -4,6 +4,8 @@ from wtforms.widgets import TextArea, html5
 from wtforms.fields.html5 import DateField
 from flask_wtf.file import FileField
 from wtforms.validators import DataRequired, Length
+from neo4j import GraphDatabase
+
 
 class LoginForm(FlaskForm):
     username=StringField('Username',validators=[DataRequired(),Length(min=8,max=20)])

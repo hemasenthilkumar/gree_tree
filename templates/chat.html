@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+<style>
+* {
+  box-sizing: border-box;
+}
+
+/* Create three equal columns that floats next to each other */
+.column {
+  float: left;
+  width: 23.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; 
+   overflow: scroll;
+}
+
+.column1 {
+  float: left;
+  width: 53.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; 
+   overflow: scroll;
+   color:red;
+}
+
+.column2 {
+  float: left;
+  width: 23.33%;
+  padding: 10px;
+  padding-left:50px;
+  height: 500px; 
+   overflow: scroll;
+	color:green
+}
+
+/* Clear floats after the columns */
+.row:after {
+  content: "";
+  display: table;
+  clear: both;
+}
+.edc
+{
+border-radius: 25px;
+background:#A9D818;
+ padding-left: 30px;
+width: 550px;
+height:60px;
+}
+</style>
+</head>
+<body>
+<center><h2> Welcome back, {{us}}!</h2></center>
+<br>
+<br>
+<div class="row">
+  <div class="column" style="background-color:white;">
+  chat here!
+	        <select name="list" id="tomsg">
+	        {% for val in l %}
+        <option value="{{val}}" SELECTED>{{val}}</option><br>
+	      {% endfor %}
+	      </select>
+	<input type="text" id="msg"/>
+  <button id="button">Send message</button>
+  <script>
+    $(document).ready(function(){
+      $("#button").click(function(){
+        var e = document.getElementById("tomsg");
+        var msg=$("#msg").val()
+      var strUser = e.options[e.selectedIndex].text;
+       var url="http://127.0.0.1:9999/sendmsg?us={{us}}&to="+strUser+"&msg="+msg
+        window.location = url;
+      });
+    });
+    </script>
+</div>
+  <div class="column1" style="background-color:white;">
+	 Sent chats
+	{% for s in sent %}
+	<h3>{{s.name}}</h3>
+	<h4>{{s.msg}}</h4>
+	{% endfor %}
+  </div>
+  <div class="column2" style="background-color:white;">
+	Recived chats
+        {% for r in recv %}
+	<h3>{{r.name}}</h3>
+	<h4>{{r.msg}}</h4>
+	{% endfor %}
+  </div>
+</div>
+</body>
+</html>
