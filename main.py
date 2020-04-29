@@ -258,6 +258,7 @@ def edit():
     role=''
     date=''
     us=request.args.get('usname')
+    mes=request.args.get('mes')
     q1="match(p:user{username:'"+us+"'}) return p.role as role, p.date_created as date"
     q2="MATCH (n:user{username:'"+us+"'})-[r]->() RETURN COUNT(r)"
     q3="MATCH (n:user{username:'"+us+"'})<-[r]-() RETURN COUNT(r)"
@@ -272,17 +273,29 @@ def edit():
     for n in nodes:
         role=n['role']
         date=n['date']
-    return render_template('edit_profile.html',us=us,role=role,date=date,d1=d1)
+    return render_template('edit_profile.html',us=us,role=role,date=date,d1=d1,mes=mes)
     
-@app.route('/edit-us')
-def edit_us():
-    g=GraphDatabase.driver(uri='bolt://localhost:7687',auth=("neo4j","hema13"));
-    session=g.session()
-    us=request.args.get('us')
-    usp=request.args.get('usp')
-    q1="match(n:user{username:'"+us+"'}) set n.username='"+usp+"'"
-    session.run(q1)
-    return redirect(url_for('edit',usname=usp))
+##@app.route('/edit-us')
+##def edit_us():
+##    l=[]
+##    g=GraphDatabase.driver(uri='bolt://localhost:7687',auth=("neo4j","hema13"));
+##    session=g.session()
+##    us=request.args.get('us')
+##    usp=request.args.get('usp')
+##    q4="MATCH (n:user) return n.username"
+##    unodes=session.run(q4)
+##    for u in unodes:
+##      l.append(u)
+##      print(l)
+##      print(usp)
+##      print(usp in l)
+##    if usp not in l:
+##      q1="match(n:user{username:'"+us+"'}) set n.username='"+usp+"'"
+##      session.run(q1)
+##      mes="Successful Updation"
+##    else:
+##      mes="Username already exists!"
+##    return redirect(url_for('edit',usname=usp,mes=mes))
 
 @app.route('/edit-rs')
 def edit_rs():
@@ -312,6 +325,7 @@ def addProduct():
 @app.route('/addProduct',methods=['POST'])
 def addProduct1():
     loc=[]
+    pnames=[]
     usname=request.args.get('usname')
     form=ProductForm()
     name=request.form['name']
@@ -324,24 +338,35 @@ def addProduct1():
         c="Decorative"
     price=request.form['price']
     file=request.form['file']
-    q2="create(p:product{name:'"+name+"',price:'"+str(price)+"',category:'"+c+"',postedBy:'"+usname+"',imageUrl:'"+file+"'}) return ID(p)"
-    q3="match(p:product{name:'"+name+"'}),(n:user{username:'"+usname+"'}) create (n)-[o:owns]->(p)"
-    print(q2)
-    print(q3)
-    nodes=session.run(q2)
-    nodes1=session.run(q3)
-    location=request.form.getlist('location')
-    for l in location:
-        if(l=='1'):
-            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Vellore'}) create (p)-[a:available_in]->(l)")
-        if(l=='2'):
-            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Chennai'}) create (p)-[a:available_in]->(l)")
-        if(l=='3'):
-            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Bangalore'}) create (p)-[a:available_in]->(l)")
-        if(l=='4'):
-            session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Hyderabad'}) create (p)-[a:available_in]->(l)")
+    q4="match(n:user{username:'"+usname+"'})-[o:owns]-(p:product) return p.name"
+    nodes2=session.run(q4)
+    for n in nodes2:
+      pnames.append(n['p.name'].lower())
+    print(pnames)
+    if name.lower() in pnames:
+      mes="Already exists!"
+      print(mes)
+    else:
+      q2="create(p:product{name:'"+name+"',price:'"+str(price)+"',category:'"+c+"',postedBy:'"+usname+"',imageUrl:'"+file+"'}) return ID(p)"
+      q3="match(p:product{name:'"+name+"'}),(n:user{username:'"+usname+"'}) create (n)-[o:owns]->(p)"
+      print(q2)
+      print(q3)
+      nodes=session.run(q2)
+      nodes1=session.run(q3)
+      location=request.form.getlist('location')
+      for l in location:
+          if(l=='1'):
+              session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Vellore'}) create (p)-[a:available_in]->(l)")
+          if(l=='2'):
+              session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Chennai'}) create (p)-[a:available_in]->(l)")
+          if(l=='3'):
+              session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Bangalore'}) create (p)-[a:available_in]->(l)")
+          if(l=='4'):
+              session.run("match(p:product{name:'"+name+"'}),(l:location{name:'Hyderabad'}) create (p)-[a:available_in]->(l)")
+      mes="Successfully added product"
+      print(mes)
     print(name,price,c,loc,file,usname)
-    return render_template('addProduct.html',form=form)
+    return render_template('addProduct.html',form=form,mes=mes,usname=usname)
 
 @app.route('/purchase')
 def purchase():
@@ -508,15 +533,26 @@ def listToString(s):
     # return string   
     return (str1.join(s))
 
+def cartString(d):
+  s=""
+  for k,v in d.items():
+    s=s+" "+k+" X " + str(v)
+  return s
+
 @app.route('/Orders')
 def orders():
   usname=request.args.get('usname')
   l=[]
+  d={}
+  i=0
   filt={"placedby":usname}
   for x in mycol.find(filt):
-    p=listToString(x['products'])
-    o=Order(p,x['total'],x['orderDate'])
-    l.append(o)
+      print(x['products'])
+      d=getDuplicatesWithCount(x['products'])
+      print(d)
+      p=cartString(d)
+      o=Order(p,x['total'],x['orderDate'])
+      l.append(o)
   return render_template('orders.html',l=l,usname=usname)
 
 @app.route('/chat')
@@ -548,6 +584,18 @@ def sendmsg():
   msg=request.args.get('msg')
   mycol2.insert({"from":usname,"to":to,"msg":msg})
   return redirect(url_for('chat',usname=usname))
+
+
+def getDuplicatesWithCount(listOfElems):
+	dictOfElems = dict()
+	for elem in listOfElems:
+		if elem in dictOfElems:
+			dictOfElems[elem] += 1
+		else:
+			dictOfElems[elem] = 1    
+    # Returns a dict of duplicate elements and thier frequency count
+	return dictOfElems
+
 
 if __name__=='__main__':
     app.run(debug=True,port=9999)
